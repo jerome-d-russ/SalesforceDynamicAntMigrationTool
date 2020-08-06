@@ -1,0 +1,67 @@
+<!-- Full installation instructions for Ant Migration Tool: https://developer.salesforce.com/docs/atlas.en-us.daas.meta/daas/forcemigrationtool_container_install.htm -->
+<project name="Ant Tasks for Deployment" default="" basedir="." xmlns:sf="antlib:com.salesforce">
+
+	<!-- Download from https://gs0.salesforce.com/dwnld/SfdcAnt/salesforce_ant_38.0.zip -->
+	<taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant-salesforce.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- Download from http://sourceforge.net/projects/ant-contrib/files/ant-contrib/1.0b3/ -->
+	<taskdef
+		resource="net/sf/antcontrib/antlib.xml"
+		classpath="${basedir}/lib/ant-contrib-1.0b3.jar"
+	/>
+
+	<target name="retrieveSource">
+		<mkdir dir="${sf.projectFolder}"/>
+		<sf:retrieve 
+			username="${sf.username}" 
+			password="${sf.password}" 
+			serverurl="${sf.serverurl}" 
+			retrieveTarget="${sf.projectFolder}" 
+			unpackaged="package.xml"/>
+	</target>
+
+	<target name="retrieveSourceProxy" depends="proxy">
+		<mkdir dir="${sf.projectFolder}"/>
+		<sf:retrieve 
+			username="${sf.username}" 
+			password="${sf.password}" 
+			serverurl="${sf.serverurl}" 
+			retrieveTarget="${sf.projectFolder}" 
+			unpackaged="package.xml"/>
+	</target>
+
+	<target name="runTests">
+       <sf:deploy
+			username="${sf.username}"
+			password="${sf.password}"
+			serverurl="${sf.serverurl}"
+			testLevel="RunSpecifiedTests"
+			deployRoot="${sf.projectFolder}"
+			checkOnly="true">{!runTests}
+		</sf:deploy>
+	</target>
+
+	<target name="runTestsProxy" depends="proxy">
+       <sf:deploy
+			username="${sf.username}"
+			password="${sf.password}"
+			serverurl="${sf.serverurl}"
+			testLevel="RunSpecifiedTests"
+			deployRoot="${sf.projectFolder}"
+			checkOnly="true">{!runTests}
+		</sf:deploy>
+	</target>
+
+	<target name="proxy">
+		<property name="proxyhost" value="${proxy.url}" />
+		<property name="proxyport" value="${proxy.port}" />
+		<property name="proxyuser" value="${proxy.username}" />
+		<property name="proxypwd" value="${proxy.password}" />
+		<setproxy proxyhost="${proxyhost}" proxyport="${proxyport}" proxyuser="${proxyuser}" proxypassword="${proxypwd}" />
+	</target>
+
+</project>
